@@ -1,0 +1,12 @@
+
+[x] 1/1 : Infinite Grid
+[x] 1/1 : Pan and Zoom
+[x] 1/1 : Moving Pieces
+[x] 1/1 : En Passant
+[x] 2/2 : Legal Moves (Pseudo Legal)
+[x] 1/1 : Castling
+[x] 2/2 : Promotion
+[x] 1/1 : Animations
+[x] 1/1 : Menu
+[ ] 0/1 : Networking
+[ ] 0/1 : Sounds

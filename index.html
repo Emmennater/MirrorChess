@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirror Chess</title>
+
+    <!-- Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+
+    <!-- Style -->
+    <link rel="stylesheet" href="style/general.css">
+    <link rel="stylesheet" href="style/game.css">
+    <link rel="stylesheet" href="style/menu.css">
+</head>
+<body>
+    
+    <!-- Splash text -->
+    <div id="splash-text" class="splash" style="visibility: hidden;">Check!</div>
+
+    <!-- Promotion GUI -->
+    <div class="promotion-wrapper">
+        <div class="promotion">
+
+        </div>
+    </div>
+    <div class="promotion-wrapper">
+        <div class="promotion">
+            
+        </div>
+    </div>
+    <div class="promotion-wrapper">
+        <div class="promotion">
+            
+        </div>
+    </div>
+    <div class="promotion-wrapper">
+        <div class="promotion">
+            
+        </div>
+    </div>
+
+    <!-- Chess Board -->
+    <div id="game" class="chessboard-wrapper" draggable="false">
+        <div id="viewport" class="chessboard-viewport" draggable="false">
+            <div id="chessboard" class="chessboard" draggable="false">
+    
+            </div id="chessboard" class="chessboard">
+        </div>
+    </div>
+
+    
+    <!-- Menu -->
+    <div id="menu-wrapper" class="menu-wrapper">
+
+        <!-- Help menu -->
+        <div id="help-menu" class="menu" style="display: none;">
+            <div class="menu-box">
+                <div>Right Click + Drag</div>
+                <div>to Pan</div>
+                <div>Scroll Wheel to Zoom</div>
+            </div>
+            <div class="menu-button" onclick="MenuEvents.closeHelpMenu()">Back</div>
+        </div>
+
+        <!-- Main menu -->
+        <div id="main-menu" class="menu" style="display: none;">
+            <div class="menu-button" onclick="MenuEvents.soloGame()">Solo</div>
+            <div class="menu-button" onclick="MenuEvents.joinGame()">Join</div>
+            <div class="menu-button" onclick="MenuEvents.hostGame()">Host</div>
+            <div class="menu-button" onclick="MenuEvents.closeMenu()">Back</div>
+        </div>
+
+        <!-- Solo menu -->
+        <div id="solo-menu" class="menu" style="display: none;">
+            <div class="menu-box">
+                Fen
+                <input id="solo-fen" type="text" value="8/8/pppppppp/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/PPPPPPPP/8/8">
+                <button class="menu-box-button" onclick="MenuEvents.startSoloGame()">Start Game</button>
+            </div>
+            <div class="menu-button" onclick="MenuEvents.mainMenu()">Back</div>
+        </div>
+
+        <!-- Join menu -->
+        <div id="join-menu" class="menu" style="display: none;">
+            <div class="menu-box">
+                <div class="menu-title">Hosts</div>
+                <div id="hosts" class="host-list">
+                    <!-- Hosts -->
+                </div>
+            </div>
+            <div class="menu-button" onclick="MenuEvents.mainMenu()">Back</div>
+        </div>
+
+        <!-- Host menu -->
+        <div id="host-menu" class="menu" style="display: none;">
+            <div class="menu-box">
+                Name
+                <input id="host-name" type="text">
+                Fen
+                <input id="host-fen" type="text" value="8/8/pppppppp/rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/PPPPPPPP/8/8">
+                <label for="sides">Side</label>
+                <select id="host-side" name="sides" id="sides">
+                    <option value="white">White</option>
+                    <option value="black">Black</option>
+                    <option value="random">Random</option>
+                </select>
+                <button class="menu-box-button" onclick="MenuEvents.submitHosting()">Host Game</button>
+            </div>
+            <div class="menu-button" onclick="MenuEvents.mainMenu()">Back</div>
+        </div>
+
+    </div>
+    
+    <!-- Toolbar -->
+    <div id="toolbar" class="toolbar">
+        <button class="button" onclick="MenuEvents.openHelpMenu()">Help</button>
+        <button class="button" onclick="MenuEvents.openMenu()">New Game</button>
+    </div>
+
+    <!-- Source -->
+    <script src="source/other.js" defer></script>
+    <script src="source/animate.js" defer></script>
+    <script src="source/events.js" defer></script>
+    <script src="source/chess.js" defer></script>
+    <script src="source/helper.js" defer></script>
+    <script src="source/movegen.js" defer></script>
+    <script src="source/session.js" defer></script>
+    <script src="source/network.js" defer></script>
+    <script src="source/menu.js" defer></script>
+    <script src="source/main.js" defer></script>
+
+</body>
+</html>

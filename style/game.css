@@ -1,0 +1,199 @@
+
+.chessboard-wrapper {
+    /* Positioning */
+    position: relative;
+    --margin: 0px;
+    width: calc(100vw - var(--margin));
+    height: calc(100vh - var(--margin));
+
+    /* Appearance */
+    overflow: hidden;
+    background-color:rgb(39, 42, 46);
+    transition: filter 0.2s;
+}
+
+.chessboard-viewport {
+    /* Pan / Zoom */
+    --pan-left: 0px;
+    --pan-top: 0px;
+    --zoom: 1;
+
+    /* Positioning */
+    position: relative;
+    width: calc(100vw - var(--margin));
+    height: calc(100vh - var(--margin));
+
+    /* Translate instead of using left and top */
+    transform: translate(var(--pan-left), var(--pan-top)) scale(var(--zoom));
+
+    /* Appearance */
+    /* overflow: hidden;
+    background-color:rgb(39, 42, 46); */
+}
+
+.chessboard {
+    /* Defaults */
+    --cols: 8;
+    --rows: 8;
+    --ratio_c: 1;
+    --ratio_r: 1;
+    --offset_x: 0;
+    --offset_y: 0;
+
+    /* Positioning */
+    position: relative;
+    --width: calc(var(--board-size) * var(--ratio_c));
+    --height: calc(var(--board-size) * var(--ratio_r));
+
+    /* Grid style */
+    display: grid;
+    direction: ltr;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    grid-template-rows: repeat(var(--rows), 1fr);
+    width: var(--width);
+    height: var(--height);
+    left: calc(var(--width) * var(--offset_x) + 50% - var(--width) / 2);
+    top: calc(var(--height) * var(--offset_y) + 50% - var(--height) / 2);
+    gap: 0;
+    
+    /* Appearance */
+    background-color: #3b3b3b;
+}
+
+.chessboard-viewport > .chessboard {
+    position: absolute;
+}
+
+.piece-container {
+    z-index: 2;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.square {
+    --square-color: #ffffff;
+    width: 100%;
+    height: 100%;
+    background-color: var(--square-color);
+}
+
+.even-square {
+    --square-color: var(--even-color);
+}
+
+.odd-square {
+    --square-color: var(--odd-color);
+}
+
+.chessboard.center .even-square {
+    /* --even-color: var(--even-color-2); */
+}
+
+.square.selected {
+    background:
+        linear-gradient(#88888860, #88888860),
+        linear-gradient(var(--square-color), var(--square-color));
+}
+
+.square.possible-move {
+    background:
+        radial-gradient(#00000030 22%, transparent calc(22% + 0.1px)),
+        linear-gradient(var(--square-color), var(--square-color));
+}
+
+.square.possible-capture {
+    background:
+        radial-gradient(transparent calc(75% - 0.1px), #00000030 75%),
+        linear-gradient(var(--square-color), var(--square-color));
+}
+
+.square.attacked {
+    background:
+        linear-gradient(#ff000030, #ff000030),
+        linear-gradient(var(--square-color), var(--square-color));
+}
+
+.square.check {
+    background:
+        radial-gradient(ellipse at center, rgb(255, 0, 0) 0%, rgb(231, 0, 0) 25%, rgba(169, 0, 0, 0) 89%, rgba(158, 0, 0, 0) 100%),
+        linear-gradient(var(--square-color), var(--square-color));
+}
+
+.piece {
+    width: 100%;
+    height: 100%;
+    /* background-image: url('https://images.chesscomfiles.com/chess-themes/pieces/icy_sea/150/wk.png'); */
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.15s linear;
+}
+
+@property --x {
+    syntax: '<number>';
+    inherits: false;
+    initial-value: 0.0;
+}
+
+.promotion-wrapper {
+    display: none;
+    position: absolute;
+    background: radial-gradient(
+        rgb(
+            calc(220 * (1.0 - var(--x)) + 220 * var(--x)),
+            calc(220 * (1.0 - var(--x)) + 180 * var(--x)),
+            calc(220 * (1.0 - var(--x)) + 170 * var(--x))
+        ),
+        rgb(
+            calc(120 * (1.0 - var(--x)) + 207 * var(--x)),
+            calc(120 * (1.0 - var(--x)) + 89 * var(--x)),
+            calc(120 * (1.0 - var(--x)) + 25 * var(--x))
+        ) calc(var(--x) * 31% + 69%),
+        transparent calc(var(--x) * 31% + 69% + 1px)
+    );
+    cursor: pointer;
+    animation: colorChangeOut 0.15s ease forwards; /* Animation for when not hovered */
+
+    user-select: none;
+}
+
+.promotion-wrapper:hover {
+    animation: colorChangeIn 0.15s ease forwards; /* Animation for when hovered */
+}
+
+@keyframes colorChangeIn {
+    from {
+        --x: 0.0;
+    }
+    to {
+        --x: 1.0;
+    }
+}
+
+@keyframes colorChangeOut {
+    from {
+        --x: 1.0;
+    }
+    to {
+        --x: 0.0;
+    }
+}
+
+.promotion {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+
+    transform: scale(0.8);
+    transition: transform 0.15s;
+
+    user-select: none;
+    pointer-events: none;
+}
+
+.promotion-wrapper:hover .promotion {
+    transform: scale(1.0);
+}
