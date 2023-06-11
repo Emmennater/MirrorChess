@@ -75,6 +75,9 @@ class ChessSession {
         this.fen = fen;
         this.turn = turn;
 
+        // New game sound effect
+        playSound("assets/game-start.mp3");
+
         // Initialize new game
         game.newGame(fen);
 
@@ -97,7 +100,7 @@ class ChessSession {
             this.requestMove(data => {
                 // print("received move: ", data);
                 const movedata = data.data;
-                game.playMove(movedata.from, movedata.to, movedata.promotion, true);
+                game.playMove(movedata.from, movedata.to, movedata.promotion, true, false, true, true);
                 gameEvents.waiting = false;
             });
         }

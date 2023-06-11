@@ -96,6 +96,10 @@ class Piece {
     }
 
     promote(type) {
+        if (type == null) {
+            console.error("cannot promote to null piece");
+            return;
+        }
         this.type = type;
         this.piece = this.isWhite ? type.toUpperCase() : type;
     }
@@ -129,7 +133,7 @@ class Move {
         else removeGameMessage();
     }
 
-    makeMove(chessgame, _0, _1, callback) {
+    makeMove(chessgame) {
         // Identify the piece
         const fromSquare = chessgame.squares[this.from.row][this.from.col];
         const toSquare = chessgame.squares[this.to.row][this.to.col];
@@ -173,7 +177,6 @@ class Move {
         chessgame.movePiece(this.from.row, this.from.col, this.to.row, this.to.col);
         
         Move.moveMade(chessgame);
-        callback(null);
     }
 }
 
@@ -206,6 +209,8 @@ class PawnMove extends Move {
         // Promotion
         if (this.isPromotion) {
             let promoteTo = promotionPiece => {
+                callback(promotionPiece);
+
                 // Promote the piece
                 const square = chessgame.squares[this.to.row][this.to.col];;
                 const piece = square.piece;
@@ -215,7 +220,6 @@ class PawnMove extends Move {
                 setPieceIcon(this.to.row, this.to.col, piece.piece);
 
                 Move.moveMade(chessgame);
-                callback(promotionPiece);
             };
 
             // Get promotion piece if null
@@ -234,7 +238,6 @@ class PawnMove extends Move {
         }
 
         Move.moveMade(chessgame);
-        callback(null);
     }
 }
 
@@ -270,9 +273,10 @@ class CastleMove {
         this.isWhite = isWhite;
         this.isAttack = false;
         this.isCapture = false;
+        this.isCastle = true;
     }
 
-    makeMove(chessgame, moveRook = true, _0, callback) {
+    makeMove(chessgame, moveRook = true) {
         // Move the king
         chessgame.movePiece(this.from.row, this.from.col, this.to.row, this.to.col);
         if (moveRook) chessgame.movePiece(this.rook.from.row, this.rook.from.col, this.rook.to.row, this.rook.to.col);
@@ -287,15 +291,13 @@ class CastleMove {
         }
 
         Move.moveMade(chessgame);
-        callback(null);
     }
 
     rookMove(chessgame, animate = false) {
         // Animate rook movement
-        const callback = () => chessgame.movePiece(this.rook.from.row, this.rook.from.col, this.rook.to.row, this.rook.to.col);
-        if (!animate) return callback();
+        chessgame.movePiece(this.rook.from.row, this.rook.from.col, this.rook.to.row, this.rook.to.col);
         const rookfrom = { row: this.rook.from.row, col: this.rook.from.col, sectorRow: 0, sectorCol: 0 };
         const rookto = { row: this.rook.to.row, col: this.rook.to.col, sectorRow: 0, sectorCol: 0 };
-        gameEvents.animatePieceMove(rookfrom, rookto, callback);
+        gameEvents.animatePieceMove(rookfrom, rookto, ()=>{});
     }
 }

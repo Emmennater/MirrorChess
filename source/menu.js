@@ -61,6 +61,9 @@ class MenuEvents {
         if (ChessNetwork.currentSession != null)
             ChessNetwork.currentSession.close();
 
+        // New game sound effect
+        playSound("assets/game-start.mp3");
+
         // Initialize new game
         game.newGame(fenString);
     }

@@ -107,10 +107,12 @@ function updateViewport() {
 }
 
 class ChessEvents {
+    static animationSpeed = 0.2; // 0.15
+
     constructor(chessgame) {
         this.chessgame = chessgame;
         this.dragOffset = { x: 0, y: 0};
-        this.selected = { none: true, row: 0, col: 0, sectorRow: 0, sectorCol: 0 };
+        this.selected = { none: true, row: -1, col: -1, sectorRow: 0, sectorCol: 0 };
         this.hovered = { none: true, row: 0, col: 0, sectorRow: 0, sectorCol: 0 };
         this.busy = false;
         this.waiting = false;
@@ -223,8 +225,19 @@ ChessEvents.prototype.mouseMove = function(e) {
     });
 }
 
-ChessEvents.prototype.playMove = function(from, to, animate) {
-    const callback = (promotion) => {
+ChessEvents.prototype.movePlayed = function(move, promotion) {
+    // Play move sound
+    let audioFile = move.isCapture ? "assets/capture.mp3" : "assets/move-self.mp3";
+    const audio = new Audio(audioFile);
+    audio.play();
+}
+
+ChessEvents.prototype.playMove = function(from, to, promotion) {
+    to.sectorRow -= viewport.sectorRow;
+    to.sectorCol -= viewport.sectorCol;
+    
+    const callback = (move, promotion) => {
+        
         // Only proceed if multiplayer
         if (!this.waitForPlayer || this.session == null) return;
 
@@ -238,12 +251,12 @@ ChessEvents.prototype.playMove = function(from, to, animate) {
         this.session.requestMove(data => {
             // print("received move: ", data);
             const movedata = data.data;
-            this.chessgame.playMove(movedata.from, movedata.to, movedata.promotion, true);
+            this.chessgame.playMove(movedata.from, movedata.to, movedata.promotion, true, false, true, true);
             this.waiting = false;
         });
     }
 
-    const success = this.chessgame.playMove(from, to, null, animate, false, callback);
+    const success = this.chessgame.playMove(from, to, null, promotion, false, true, false, callback);
 
     return success;
 }
@@ -251,18 +264,23 @@ ChessEvents.prototype.playMove = function(from, to, animate) {
 ChessEvents.prototype.animatePieceMove = function(from, to, callback) {
 
     const index = from.row * 8 + from.col;
-    const fromBoard = allboards[from.sectorRow][from.sectorCol];
-    const toBoard = allboards[to.sectorRow][to.sectorCol];
-    const fromSquare = fromBoard.children[from.row * 8 + from.col];
-    const toSquare = toBoard.children[to.row * 8 + to.col];
+    const boardSize = allboards[0][0].getClientRects()[0];
+    // const fromBoard = allboards[from.sectorRow][from.sectorCol];
+    // const toBoard = allboards[to.sectorRow][to.sectorCol];
+    // const fromSquare = fromBoard.children[from.row * 8 + from.col];
+    // const toSquare = toBoard.children[to.row * 8 + to.col];
+    const fromSquare = allboards[0][0].children[from.row * 8 + from.col];
+    const toSquare = allboards[0][0].children[to.row * 8 + to.col];
     const fromRects = fromSquare.getClientRects()[0];
     const toRects = toSquare.getClientRects()[0];
-    const deltaX = toRects.x - fromRects.x;
-    const deltaY = toRects.y - fromRects.y;
+    const sectorDeltaX = (to.sectorCol - from.sectorCol) * boardSize.width;
+    const sectorDeltaY = (to.sectorRow - from.sectorRow) * boardSize.height;
+    const deltaX = (toRects.x - fromRects.x) + sectorDeltaX;
+    const deltaY = (toRects.y - fromRects.y) + sectorDeltaY;
 
     const animate = time => {
-        const xoff = deltaX * time / viewport.zoom;
-        const yoff = deltaY * time / viewport.zoom;
+        const xoff = (deltaX * time / viewport.zoom);
+        const yoff = (deltaY * time / viewport.zoom);
 
         // Translate all the pieces
         boardIterator((board, r, c) => {
@@ -278,10 +296,19 @@ ChessEvents.prototype.animatePieceMove = function(from, to, callback) {
             const container = square.children[0];
             container.removeAttribute("style");
         });
+        this.updatePieceMove(from, to);
         callback();
     }
 
-    new CustomAnimation(0.15, animate, finish);
+    new CustomAnimation(ChessEvents.animationSpeed, animate, finish);
+}
+
+ChessEvents.prototype.updatePieceMove = function(from, to) {
+    const toSquare = game.squares[to.row][to.col];
+
+    // Update the elements
+    setPieceIcon(from.row, from.col, ' ');
+    setPieceIcon(to.row, to.col, toSquare.piece.piece);
 }
 
 ChessEvents.prototype.requestPromotion = function(row, col, sectorRow, sectorCol, isWhite, callback) {
@@ -336,4 +363,13 @@ ChessEvents.prototype.requestPromotion = function(row, col, sectorRow, sectorCol
         promoteWrapper.appendChild(promoteTile);
         document.body.appendChild(promoteWrapper);
     }
+}
+
+ChessEvents.prototype.resetAllSelected = function() {
+    this.selected = { none: true, row: -1, col: -1, sectorRow: 0, sectorCol: 0 };
+}
+
+function playSound(audioFile) {
+    const audio = new Audio(audioFile);
+    audio.play();
 }

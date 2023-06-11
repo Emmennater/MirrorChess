@@ -60,7 +60,10 @@ ChessGame.prototype.newGame = function(fenString) {
     // Reset game board
     game.resetBoard();
     game.loadFen(fenString);
-    
+
+    // Reset selections
+    gameEvents.resetAllSelected();
+
     // Update possible moves
     MoveGenerator.generateMoves(game);
 }
@@ -79,9 +82,6 @@ ChessGame.prototype.movePiece = function(fromrow, fromcol, torow, tocol) {
         return false; // This should never be the case
     }
 
-    // Update the elements
-    setPieceIcon(fromrow, fromcol, ' ');
-    setPieceIcon(torow, tocol, toSquare.piece.piece);
     return true;
 }
 
@@ -99,19 +99,49 @@ ChessGame.prototype.removePiece = function(row, col) {
     setPieceIcon(row, col, ' ');
 }
 
-ChessGame.prototype.playMove = function(from, to, promotion = null, animate = false, override = false, moveCallback = ()=>{}) {
+ChessGame.prototype.playMove = function(from, to, promotion = null, animate = false, override = false, sound = false, opponent = false, callback = ()=>{}) {
     // Make sure the move is to a different square
     if (from.row == to.row && from.col == to.col && from.sectorRow == to.sectorRow && from.sectorCol == to.sectorCol)
         return false;
 
     // Get the move if it is legal
     const move = MoveGenerator.findMove(from.row, from.col, to.row, to.col);
-    if (move === false) return false;
+    if (move === false) {
+        // Illegal move
+        if (sound && !animate)
+            playSound("assets/illegal.mp3");
+        return false;
+    }
 
     // Move is made once the animations are complete
-    const postAnimationCallback = () => {
-        return move.makeMove(this, promotion, { row: to.sectorRow, col: to.sectorCol }, moveCallback);
-    };
+    let promoteCallback = (promotion) => {
+        if (sound) {
+            // Play promote sound
+            playSound("assets/promote.mp3");
+        }
+
+        callback(move, promotion);
+    }
+
+    // Instant feedback without promotion
+    if (!move.isPromotion) {
+        callback(move, promotion);
+        promoteCallback = ()=>{}
+    }
+
+    // Make move before animation?
+    move.makeMove(this, promotion, { row: to.sectorRow, col: to.sectorCol }, promoteCallback);
+
+    if (sound) {
+        // Play move sound
+        const gameOver = MoveGenerator.moves.length == 0;
+        let audioFile = move.isCapture ? "assets/capture.mp3" :
+            opponent ? "assets/move-opponent.mp3" : "assets/move-self.mp3";
+        if (move.isCastle) audioFile = "assets/castle.mp3";
+        if (MoveGenerator.kingInCheck && !gameOver) audioFile = "assets/move-check.mp3";
+        playSound(audioFile);
+        if (gameOver) playSound("assets/game-end.mp3");
+    }
 
     // Animate rook while castling
     if (move.constructor.name == "CastleMove") {
@@ -120,9 +150,9 @@ ChessGame.prototype.playMove = function(from, to, promotion = null, animate = fa
 
     // Animate move
     if (animate) {
-        gameEvents.animatePieceMove(from, to, postAnimationCallback);
+        gameEvents.animatePieceMove(from, to, ()=>{});
     } else {
-        postAnimationCallback();
+        gameEvents.updatePieceMove(from, to);
     }
 
     return true;

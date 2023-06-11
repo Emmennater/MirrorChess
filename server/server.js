@@ -1,6 +1,10 @@
 
+const https = require('https');
 const WebSocket = require('ws');
+const fs = require('fs');
 
+// Maybe add a ban list to users who try to "hack" the system
+// by sending bad data
 class Client {
     constructor(server, ws, id) {
         this.server = server;
@@ -12,21 +16,30 @@ class Client {
     }
 
     onMessage(message) {
-        const json = JSON.parse(message.toString());
+        let json;
+        try {
+            json = JSON.parse(message.toString());
+        } catch (error) {
+            return;
+        }
         if (!json) return;
 
         // console.log("Received message: ", json);
         
-        if (json.type == "put") this.server.databank.put(json.what, json.data, this);
-        if (json.type == "get") {
-            this.server.databank.get(json.what, this, (data) => {
-                const packet = {
-                    type: "reply",
-                    data: data,
-                    id: json.id
-                };
-                this.ws.send(JSON.stringify(packet));
-            });
+        try {
+            if (json.type == "put") this.server.databank.put(json.what, json.data, this);
+            if (json.type == "get") {
+                this.server.databank.get(json.what, this, (data) => {
+                    const packet = {
+                        type: "reply",
+                        data: data,
+                        id: json.id
+                    };
+                    this.ws.send(JSON.stringify(packet));
+                });
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 

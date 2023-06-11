@@ -15,21 +15,21 @@ class Host {
     hostLeaving() {
         if (this.clientId == 0) return;
 
-        // Notify the host that a client has left the session
+        // Notify the client that the host has left the session
         this.server.sendClient(this.clientId, "left", 0);
     }
 
     clientJoining(clientId) {
         this.clientId = clientId;
 
-        // Notify the host that a client has joined the session
+        // Notify the host that the client has joined the session
         this.server.sendClient(this.hostId, "joined", 0);
     }
 
     clientLeaving() {
         this.clientId = 0;
 
-        // Notify the host that a client has left the session
+        // Notify the host that the client has left the session
         this.server.sendClient(this.hostId, "left", 0);
     }
 }

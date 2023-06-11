@@ -9,4 +9,4 @@
 [x] 1/1 : Animations
 [x] 1/1 : Menu
 [x] 1/1 : Networking
-[ ] 0/1 : Sounds
+[x] 1/1 : Sounds
