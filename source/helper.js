@@ -99,26 +99,30 @@ ChessGame.prototype.removePiece = function(row, col) {
     setPieceIcon(row, col, ' ');
 }
 
-ChessGame.prototype.playMove = function(from, to, animate = false, override = false) {
+ChessGame.prototype.playMove = function(from, to, promotion = null, animate = false, override = false, moveCallback = ()=>{}) {
     // Make sure the move is to a different square
     if (from.row == to.row && from.col == to.col && from.sectorRow == to.sectorRow && from.sectorCol == to.sectorCol)
         return false;
 
+    // Get the move if it is legal
     const move = MoveGenerator.findMove(from.row, from.col, to.row, to.col);
     if (move === false) return false;
 
-    const callback = () => {
-        move.makeMove(this, null, { row: to.sectorRow, col: to.sectorCol });
+    // Move is made once the animations are complete
+    const postAnimationCallback = () => {
+        return move.makeMove(this, promotion, { row: to.sectorRow, col: to.sectorCol }, moveCallback);
     };
 
+    // Animate rook while castling
     if (move.constructor.name == "CastleMove") {
         move.rookMove(this, !override);
     }
 
+    // Animate move
     if (animate) {
-        gameEvents.animatePieceMove(from, to, callback);
+        gameEvents.animatePieceMove(from, to, postAnimationCallback);
     } else {
-        callback();
+        postAnimationCallback();
     }
 
     return true;

@@ -85,7 +85,7 @@ class ChessSession {
         Sockets.request({ type: "history", sessionId: this.session.id }, data => {
             // Play all the moves
             for (let move of data.data) {
-                game.playMove(move.from, move.to, false, true);
+                game.playMove(move.from, move.to, move.promotion, false, true);
             }
         });
 
@@ -97,7 +97,7 @@ class ChessSession {
             this.requestMove(data => {
                 // print("received move: ", data);
                 const movedata = data.data;
-                game.playMove(movedata.from, movedata.to, true);
+                game.playMove(movedata.from, movedata.to, movedata.promotion, true);
                 gameEvents.waiting = false;
             });
         }

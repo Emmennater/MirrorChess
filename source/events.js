@@ -224,21 +224,26 @@ ChessEvents.prototype.mouseMove = function(e) {
 }
 
 ChessEvents.prototype.playMove = function(from, to, animate) {
-    const success = this.chessgame.playMove(from, to, animate);
-    if (success && this.waitForPlayer && this.session != null) {
+    const callback = (promotion) => {
+        // Only proceed if multiplayer
+        if (!this.waitForPlayer || this.session == null) return;
+
+        // Wait for next player
         this.waiting = true;
 
         // Send move information to other player
-        this.session.sendMove({ from, to });
+        this.session.sendMove({ from, to, promotion });
 
         // Request move from other player
         this.session.requestMove(data => {
             // print("received move: ", data);
             const movedata = data.data;
-            this.chessgame.playMove(movedata.from, movedata.to, true);
+            this.chessgame.playMove(movedata.from, movedata.to, movedata.promotion, true);
             this.waiting = false;
         });
     }
+
+    const success = this.chessgame.playMove(from, to, null, animate, false, callback);
 
     return success;
 }

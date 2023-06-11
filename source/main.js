@@ -1,5 +1,5 @@
 
-const MIRROR_RADIUS = 1;
+const MIRROR_RADIUS = 3;
 let highlighted = { row: 0, col: 0, sectorRow: 0, sectorCol: 0 };
 let checked = { row: 0, col: 0 };
 let squaresHighlighted = [];
