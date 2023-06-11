@@ -5,10 +5,12 @@ class Sockets {
     static outgoingRequests = new Map();
 
     static establishConnection() {
+        const isSecure = window.location.href.startsWith('https://');
         const isLocal = window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1";
+        const protocol = isSecure ? "wss" : "ws";
         const hostname = isLocal ? "localhost" : "131.93.29.118";
         const port = 8082;
-        this.ws = new WebSocket(`ws://${hostname}:${port}`);
+        this.ws = new WebSocket(`${protocol}://${hostname}:${port}`);
 
         this.ws.addEventListener("open", conn => {
             this.open = true;
