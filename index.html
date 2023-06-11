@@ -8,7 +8,7 @@
     <title>Mirror Chess</title>
 
     <!-- Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script> -->
 
     <!-- Style -->
     <link rel="stylesheet" href="style/general.css">
@@ -67,9 +67,10 @@
 
         <!-- Main menu -->
         <div id="main-menu" class="menu" style="display: none;">
-            <div class="menu-button" onclick="MenuEvents.soloGame()">Solo</div>
-            <div class="menu-button" onclick="MenuEvents.joinGame()">Join</div>
-            <div class="menu-button" onclick="MenuEvents.hostGame()">Host</div>
+            <div id="is-online" class="online-text">Server Offline</div>
+            <div id="solo-button" class="menu-button" onclick="MenuEvents.soloGame()">Solo</div>
+            <div id="join-button" class="menu-button" onclick="MenuEvents.joinGame()">Join</div>
+            <div id="host-button" class="menu-button" onclick="MenuEvents.hostGame()">Host</div>
             <div class="menu-button" onclick="MenuEvents.closeMenu()">Back</div>
         </div>
 

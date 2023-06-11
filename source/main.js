@@ -230,7 +230,9 @@ function loop(timestamp) {
     setupEventListeners(allboards, gameEvents);
     updateViewport();
     requestAnimationFrame(loop);
+    MenuEvents.openMenu();
+    MenuEvents.serverIsOffline();
 
-    // testNetwork();
-    ChessSession.updateSessionLists();
+    // Connect to server
+    Sockets.establishConnection();
 })();

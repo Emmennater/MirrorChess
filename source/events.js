@@ -115,7 +115,7 @@ class ChessEvents {
         this.busy = false;
         this.waiting = false;
         this.waitForPlayer = true;
-        this.networkInterface = null;
+        this.session = null;
     }
 }
 
@@ -225,17 +225,18 @@ ChessEvents.prototype.mouseMove = function(e) {
 
 ChessEvents.prototype.playMove = function(from, to, animate) {
     const success = this.chessgame.playMove(from, to, animate);
-    if (success && this.waitForPlayer && this.networkInterface != null) {
+    if (success && this.waitForPlayer && this.session != null) {
         this.waiting = true;
 
         // Send move information to other player
-        this.networkInterface.sendNextMove({ from, to });
+        this.session.sendMove({ from, to });
 
         // Request move from other player
-        this.networkInterface.requestNextMove(data => {
-            print(data);
-            // this.chessgame.playMove(data.move.from, data.move.to, true);
-            // this.waiting = false;
+        this.session.requestMove(data => {
+            // print("received move: ", data);
+            const movedata = data.data;
+            this.chessgame.playMove(movedata.from, movedata.to, true);
+            this.waiting = false;
         });
     }
 

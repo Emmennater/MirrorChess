@@ -151,3 +151,20 @@
     transform: scale(1.0);
     transition: 0s;
 }
+
+.online-text {
+    font-family: "Arial Black";
+    text-shadow: 0px 0px 4px black;
+    text-align: center;
+    font-size: 20px;
+    color: rgb(223, 32, 70);
+}
+
+.online-text.online {
+    color: rgb(85, 209, 116);
+}
+
+.button-disabled {
+    pointer-events: none;
+    filter: brightness(0.6);
+}

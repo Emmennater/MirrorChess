@@ -99,7 +99,7 @@ ChessGame.prototype.removePiece = function(row, col) {
     setPieceIcon(row, col, ' ');
 }
 
-ChessGame.prototype.playMove = function(from, to, animate = false) {
+ChessGame.prototype.playMove = function(from, to, animate = false, override = false) {
     // Make sure the move is to a different square
     if (from.row == to.row && from.col == to.col && from.sectorRow == to.sectorRow && from.sectorCol == to.sectorCol)
         return false;
@@ -112,7 +112,7 @@ ChessGame.prototype.playMove = function(from, to, animate = false) {
     };
 
     if (move.constructor.name == "CastleMove") {
-        move.animateRookMove(this);
+        move.rookMove(this, !override);
     }
 
     if (animate) {

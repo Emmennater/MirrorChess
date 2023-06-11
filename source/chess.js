@@ -10,7 +10,7 @@ class ChessGame {
         // this.loadFen("8/8/pppppppp/rnbqk1n1/p1pppppp/8/1pKP3r/8/8/PPP1PPPP/RNBQ1BNR/PPPPPPPP/8/8");
         // this.loadFen("8/8/pppppppp/r2qk2r/8/8/8/8/8/8/R2QK2R/PPPPPPPP/8/8");
         // this.loadFen("8/8/8/3q4/8/8/8/8/8/8/4Q3/8/8/8");
-        this.loadFen("8/8/8/1p1k4/8/8/8/8/8/8/5Q2/8/8/8");
+        // this.loadFen("8/8/8/1p1k4/8/8/8/8/8/8/5Q2/8/8/8");
         MoveGenerator.generateMoves(this);
     }
 
@@ -286,9 +286,10 @@ class CastleMove {
         Move.moveMade(chessgame);
     }
 
-    animateRookMove(chessgame) {
+    rookMove(chessgame, animate = false) {
         // Animate rook movement
         const callback = () => chessgame.movePiece(this.rook.from.row, this.rook.from.col, this.rook.to.row, this.rook.to.col);
+        if (!animate) return callback();
         const rookfrom = { row: this.rook.from.row, col: this.rook.from.col, sectorRow: 0, sectorCol: 0 };
         const rookto = { row: this.rook.to.row, col: this.rook.to.col, sectorRow: 0, sectorCol: 0 };
         gameEvents.animatePieceMove(rookfrom, rookto, callback);

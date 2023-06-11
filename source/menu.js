@@ -9,14 +9,21 @@ class MenuEvents {
     static menuOpen = false;
 
     static openHelpMenu() {
+        this.menu.style.display = "none";
         this.menuWrapper.classList.add("showing");
         this.helpMenu.style.display = "flex";
         gameEvents.busy = true;
     }
 
     static closeHelpMenu() {
-        this.menuWrapper.classList.remove("showing");
         this.helpMenu.style.display = "none";
+
+        if (this.menuOpen) {
+            this.menu.style.display = "flex";
+            return;
+        }
+
+        this.menuWrapper.classList.remove("showing");
         gameEvents.busy = false;
     }
 
@@ -128,6 +135,28 @@ class MenuEvents {
         }
         host.appendChild(button);
         hosts.appendChild(host);
+    }
+
+    static serverIsOnline() {
+        const serverText = document.getElementById("is-online");
+        serverText.innerText = "Server Online";
+        serverText.classList.add("online");
+
+        const joinButton = document.getElementById("join-button");
+        const hostButton = document.getElementById("host-button");
+        joinButton.classList.remove("button-disabled");
+        hostButton.classList.remove("button-disabled");
+    }
+
+    static serverIsOffline() {
+        const serverText = document.getElementById("is-online");
+        serverText.innerText = "Server Offline";
+        serverText.classList.remove("online");
+
+        const joinButton = document.getElementById("join-button");
+        const hostButton = document.getElementById("host-button");
+        joinButton.classList.add("button-disabled");
+        hostButton.classList.add("button-disabled");
     }
 }
 

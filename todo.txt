@@ -8,5 +8,5 @@
 [x] 2/2 : Promotion
 [x] 1/1 : Animations
 [x] 1/1 : Menu
-[ ] 0/1 : Networking
+[x] 1/1 : Networking
 [ ] 0/1 : Sounds

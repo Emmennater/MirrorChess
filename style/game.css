@@ -12,6 +12,18 @@
     transition: filter 0.2s;
 }
 
+.chessboard-wrapper::before {
+    pointer-events: none;
+    content: ""; /* Add an empty content pseudo-element */
+    position: absolute; /* Position the pseudo-element absolutely */
+    top: 0;
+    left: 0;
+    width: calc(100vw - var(--margin));
+    height: calc(100vh - var(--margin));
+    box-shadow: inset 0px 0px 40px #00000060;
+    z-index: 20;
+}
+
 .chessboard-viewport {
     /* Pan / Zoom */
     --pan-left: 0px;
