@@ -7,6 +7,8 @@
 [x] 1/1 : Castling
 [x] 2/2 : Promotion
 [x] 1/1 : Animations
-[x] 1/1 : Menu
+[ ] 1/2 : Menu (need to show board hovering join session)
 [x] 1/1 : Networking
 [x] 1/1 : Sounds
+[ ] 1/2 : Notifications (still need turns)
+[ ] 0/1 : Board Editor

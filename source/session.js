@@ -8,6 +8,8 @@ class ChessSession {
         
         // Session
         this.session = null;
+
+        this.isHost = false;
     }
     
     static updateSessionLists(hostings) {
@@ -35,6 +37,7 @@ class ChessSession {
         const sessionId = ChessNetwork.randomString();
         const session = { type: "session", id: sessionId, hostName, fen, hostsTurn };
         this.session = session;
+        this.isHost = true;
 
         // Broadcast session
         Sockets.send("hosting", session);
@@ -46,10 +49,13 @@ class ChessSession {
     connect(sessionId) {
         Sockets.request({ type: "join", sessionId }, (reply) => {
             if (typeof reply.data == "string") {
+                if (reply.data == "host not found")
+                    Notification.show("Host Left");
                 this.leave();
                 return console.error(reply.data);
             }
             this.session = reply.data;
+            this.isHost = false;
             this.setupGame(this.session.fen, !this.session.hostsTurn);
         });
     }
@@ -61,6 +67,7 @@ class ChessSession {
         gameEvents.waitForPlayer = false;
         gameEvents.session = null;
         this.session = null;
+        this.isHost = false;
     }
 
     sendMove(data) {
@@ -76,7 +83,7 @@ class ChessSession {
         this.turn = turn;
 
         // New game sound effect
-        playSound("assets/game-start.mp3");
+        // playSound("assets/game-start.mp3");
 
         // Initialize new game
         game.newGame(fen);

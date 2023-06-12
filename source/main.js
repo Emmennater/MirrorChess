@@ -4,6 +4,7 @@ let highlighted = { row: 0, col: 0, sectorRow: 0, sectorCol: 0 };
 let checked = { row: 0, col: 0 };
 let squaresHighlighted = [];
 let squaresChecked = [];
+let focusModeEnabled = false;
 
 function getPieceSrcUrl(letter) {
     let side = letter.toUpperCase() == letter ? "w" : "b";
@@ -78,13 +79,19 @@ function highlightMoves(row, col, sectorRow, sectorCol) {
     highlighted.col = col;
     highlighted.sectorRow = sectorRow;
     highlighted.sectorCol = sectorCol;
-    
+
     // Get possible moves for piece
     let moves = MoveGenerator.findPieceMoves(row, col);
     for (let move of moves) {
         const index = move.to.row * 8 + move.to.col;
         let moveSectorRow = sectorRow + move.boardOffset.row + viewport.sectorRow;
         let moveSectorCol = sectorCol + move.boardOffset.col + viewport.sectorCol;
+
+        // Focus mode
+        if (focusModeEnabled) {
+            moveSectorRow = MIRROR_RADIUS;
+            moveSectorCol = MIRROR_RADIUS;
+        }
 
         // Highlight main sectors moves
         // const mainBoard = allboards[sectorRow][sectorCol];
@@ -186,6 +193,30 @@ function setupMirrors(chesselem) {
     return boards;
 }
 
+function enableFocusMode() {
+    focusModeEnabled = true;
+    boardIterator((board, r, c) => {
+        if (r == MIRROR_RADIUS && c == MIRROR_RADIUS) return;
+        board.style.display = "none";
+    });
+    const centerBoard = allboards[MIRROR_RADIUS][MIRROR_RADIUS];
+    centerBoard.classList.add("focus-mode");
+    viewport.left = 0;
+    viewport.top = 0;
+    viewport.zoom = 1;
+    updateViewport();
+}
+
+function disableFocusMode() {
+    focusModeEnabled = false;
+    boardIterator((board, r, c) => {
+        if (r == MIRROR_RADIUS && c == MIRROR_RADIUS) return;
+        board.style.display = "grid";
+    });
+    const centerBoard = allboards[MIRROR_RADIUS][MIRROR_RADIUS];
+    centerBoard.classList.remove("focus-mode");
+}
+
 function setupEventListeners(boards, eventHandler) {
     for (let r = 0; r < boards.length; ++r) {
         for (let c = 0; c < boards[r].length; ++c) {
@@ -230,8 +261,11 @@ function loop(timestamp) {
     setupEventListeners(allboards, gameEvents);
     updateViewport();
     requestAnimationFrame(loop);
+
+    // Menu Events
     MenuEvents.openMenu();
     MenuEvents.serverIsOffline();
+    MenuEvents.toggleFocusMode();
 
     // Connect to server
     Sockets.establishConnection();

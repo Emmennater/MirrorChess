@@ -12,6 +12,7 @@
 
     <!-- Style -->
     <link rel="stylesheet" href="style/general.css">
+    <link rel="stylesheet" href="style/notif.css">
     <link rel="stylesheet" href="style/game.css">
     <link rel="stylesheet" href="style/menu.css">
 </head>
@@ -55,6 +56,15 @@
     <!-- Menu -->
     <div id="menu-wrapper" class="menu-wrapper">
 
+        <!-- Settings menu -->
+        <div id="settings-menu" class="menu" style="display: none;">
+            <div id="focus-button" class="menu-button" onclick="MenuEvents.toggleFocusMode()">
+                Focus Mode
+                <span id="focus-state" class="button-text">Disabled</span>
+            </div>
+            <div class="menu-button" onclick="MenuEvents.closeCurrentMenu()">Back</div>
+        </div>
+
         <!-- Help menu -->
         <div id="help-menu" class="menu" style="display: none;">
             <div class="menu-box">
@@ -62,7 +72,7 @@
                 <div>to Pan</div>
                 <div>Scroll Wheel to Zoom</div>
             </div>
-            <div class="menu-button" onclick="MenuEvents.closeHelpMenu()">Back</div>
+            <div class="menu-button" onclick="MenuEvents.closeCurrentMenu()">Back</div>
         </div>
 
         <!-- Main menu -->
@@ -71,7 +81,7 @@
             <div id="solo-button" class="menu-button" onclick="MenuEvents.soloGame()">Solo</div>
             <div id="join-button" class="menu-button" onclick="MenuEvents.joinGame()">Join</div>
             <div id="host-button" class="menu-button" onclick="MenuEvents.hostGame()">Host</div>
-            <div class="menu-button" onclick="MenuEvents.closeMenu()">Back</div>
+            <div class="menu-button" onclick="MenuEvents.closeCurrentMenu()">Back</div>
         </div>
 
         <!-- Solo menu -->
@@ -119,10 +129,12 @@
     <div id="toolbar" class="toolbar">
         <button class="button" onclick="MenuEvents.openHelpMenu()">Help</button>
         <button class="button" onclick="MenuEvents.openMenu()">New Game</button>
+        <button class="button" onclick="MenuEvents.openSettingsMenu()">Settings</button>
     </div>
 
     <!-- Source -->
     <script src="source/other.js" defer></script>
+    <script src="source/notif.js" defer></script>
     <script src="source/animate.js" defer></script>
     <script src="source/events.js" defer></script>
     <script src="source/chess.js" defer></script>

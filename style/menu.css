@@ -168,3 +168,12 @@
     pointer-events: none;
     filter: brightness(0.6);
 }
+
+.button-text {
+    font-size: 16px;
+    color: rgb(223, 32, 70);
+}
+
+.text-enabled {
+    color: rgb(77, 192, 106);
+}

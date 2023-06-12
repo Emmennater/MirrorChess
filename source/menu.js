@@ -1,45 +1,75 @@
 
 class MenuEvents {
     static menuWrapper = document.getElementById("menu-wrapper");        
+    static settingsMenu = document.getElementById("settings-menu");
     static helpMenu = document.getElementById("help-menu");
     static menu = document.getElementById("main-menu");
     static soloMenu = document.getElementById("solo-menu");
     static joinMenu = document.getElementById("join-menu");
     static hostMenu = document.getElementById("host-menu");
     static menuOpen = false;
+    static menusOpen = [];
 
-    static openHelpMenu() {
-        this.menu.style.display = "none";
-        this.menuWrapper.classList.add("showing");
-        this.helpMenu.style.display = "flex";
-        gameEvents.busy = true;
+    static closeCurrentMenu(remove = true) {
+        if (this.menusOpen.length == 0) return;
+        const menuClosed = this.menusOpen.back();
+        if (remove) this.menusOpen.pop();
+        switch (menuClosed) {
+            case "settings": this.settingsMenu.style.display = "none"; break;
+            case "help": this.helpMenu.style.display = "none"; break;
+            case "main": this.menu.style.display = "none"; break;
+        }
+        if (this.menusOpen.length == 0) {
+            this.menuWrapper.classList.remove("showing");
+            gameEvents.busy = false;
+            this.menuOpen = false;
+        } else if (remove) {
+            this.openCurrentMenu();
+        }
     }
 
-    static closeHelpMenu() {
-        this.helpMenu.style.display = "none";
-
-        if (this.menuOpen) {
-            this.menu.style.display = "flex";
-            return;
-        }
-
+    static closeAllMenus() {
+        this.closeCurrentMenu(false);
+        this.menusOpen = [];
         this.menuWrapper.classList.remove("showing");
         gameEvents.busy = false;
+        this.menuOpen = false;
+    }
+
+    static openCurrentMenu() {
+        if (this.menusOpen.length == 0) return;
+        const menuOpened = this.menusOpen.back();
+        switch (menuOpened) {
+        case "settings": this.settingsMenu.style.display = "flex"; break;
+        case "help": this.helpMenu.style.display = "flex"; break;
+        case "main": this.menu.style.display = "flex"; break;
+        }
+        if (this.menusOpen.length == 1) {
+            this.menuWrapper.classList.add("showing");
+            gameEvents.busy = true;
+            this.menuOpen = true;
+        }
+    }
+
+    static openSettingsMenu() {
+        if (this.menusOpen.back() == "settings") return;
+        this.closeCurrentMenu(false);
+        this.menusOpen.push("settings");
+        this.openCurrentMenu();
+    }
+
+    static openHelpMenu() {
+        if (this.menusOpen.back() == "help") return;
+        this.closeCurrentMenu(false);
+        this.menusOpen.push("help");
+        this.openCurrentMenu();
     }
 
     static openMenu() {
-        if (this.menuOpen) return;
-        this.menuOpen = true;
-        this.menuWrapper.classList.add("showing");
-        this.menu.style.display = "flex";
-        gameEvents.busy = true;
-    }
-
-    static closeMenu() {
-        this.menuOpen = false;
-        this.menuWrapper.classList.remove("showing");
-        this.menu.style.display = "none";
-        gameEvents.busy = false;
+        if (this.menusOpen.back() == "main") return;
+        this.closeCurrentMenu(false);
+        this.menusOpen.push("main");
+        this.openCurrentMenu();
     }
 
     static mainMenu() {
@@ -47,6 +77,7 @@ class MenuEvents {
         this.joinMenu.style.display = "none";
         this.hostMenu.style.display = "none";
         this.menu.style.display = "flex";
+        this.menusOpen = ["main"];
     }
 
     static startSoloGame() {
@@ -55,7 +86,7 @@ class MenuEvents {
 
         // Close menus
         this.soloMenu.style.display = "none";
-        this.closeMenu();
+        this.closeAllMenus();
 
         // Stop multiplayer if not already
         if (ChessNetwork.currentSession != null)
@@ -113,7 +144,10 @@ class MenuEvents {
 
         // Close menus
         this.mainMenu();
-        this.closeMenu();
+        this.closeAllMenus();
+
+        // New game sound effect
+        playSound("assets/game-start.mp3");
 
         // Create session
         ChessNetwork.host(hostName, fenString, side);
@@ -132,8 +166,11 @@ class MenuEvents {
         button.classList.add("host-button");
         button.innerText = name;
         button.onclick = () => {
+            // Join game sound effect
+            playSound("assets/game-start.mp3");
+
             this.mainMenu();
-            this.closeMenu();
+            this.closeAllMenus();
             callback();
         }
         host.appendChild(button);
@@ -160,6 +197,22 @@ class MenuEvents {
         const hostButton = document.getElementById("host-button");
         joinButton.classList.add("button-disabled");
         hostButton.classList.add("button-disabled");
+    }
+
+    static toggleFocusMode() {
+        if (focusModeEnabled) {
+            // Disable
+            const buttonText = document.getElementById("focus-state");
+            buttonText.classList.remove("text-enabled");
+            buttonText.innerText = "Disabled";
+            disableFocusMode();
+        } else {
+            // Enable
+            const buttonText = document.getElementById("focus-state");
+            buttonText.classList.add("text-enabled");
+            buttonText.innerText = "Enabled";
+            enableFocusMode();
+        }
     }
 }
 

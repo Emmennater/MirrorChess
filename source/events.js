@@ -33,7 +33,7 @@ document.addEventListener("mouseup", e => {
 document.addEventListener("mousemove", e => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
-    if (mouse.down && mouse.button == 2 && !gameEvents.busy) {
+    if (mouse.down && mouse.button == 2 && !gameEvents.busy && !focusModeEnabled) {
         // Pan
         // viewport.left = viewport.oldleft + e.clientX - mouse.startX;
         // viewport.top = viewport.oldtop + e.clientY - mouse.startY;
@@ -47,17 +47,24 @@ document.addEventListener("mousemove", e => {
 });
 
 document.addEventListener("wheel", e => {
+    if (focusModeEnabled) return;
     if (mouse.down) return;
     if (gameEvents.busy) return;
 
+    const moveViewport = !focusModeEnabled;
     const speed = 1.2;
     const minZoom = 0.7; // 1
     const viewportWidth = document.body.clientWidth;
     const viewportHeight = document.body.clientHeight;
-    const focalX = mouse.x - viewportWidth / 2;
-    const focalY = mouse.y - viewportHeight / 2;
+    let focalX = mouse.x - viewportWidth / 2;
+    let focalY = mouse.y - viewportHeight / 2;
     const oldZoom = viewport.zoom;
     let newZoom;
+
+    if (!moveViewport) {
+        focalX = 0;
+        focalY = 0;
+    }
 
     if (e.deltaY < 0) {
         newZoom = oldZoom * speed; // Zoom in
@@ -88,10 +95,12 @@ function updateViewport() {
     let sectorUpdated = false;
 
     // Wrapping
-    while (left > width / 2) { left -= width; ++viewport.sectorCol; sectorUpdated = true; }
-    while (top > height / 2) { top -= height; ++viewport.sectorRow; sectorUpdated = true; }
-    while (left < -width / 2) { left += width; --viewport.sectorCol; sectorUpdated = true; }
-    while (top < -height / 2) { top += height; --viewport.sectorRow; sectorUpdated = true; }
+    if (!focusModeEnabled) {
+        while (left > width / 2) { left -= width; ++viewport.sectorCol; sectorUpdated = true; }
+        while (top > height / 2) { top -= height; ++viewport.sectorRow; sectorUpdated = true; }
+        while (left < -width / 2) { left += width; --viewport.sectorCol; sectorUpdated = true; }
+        while (top < -height / 2) { top += height; --viewport.sectorRow; sectorUpdated = true; }
+    }
     
     // Update viewport
     viewport.left = left;
@@ -263,18 +272,27 @@ ChessEvents.prototype.playMove = function(from, to, promotion) {
 
 ChessEvents.prototype.animatePieceMove = function(from, to, callback) {
 
+    const centerBoard = allboards[MIRROR_RADIUS][MIRROR_RADIUS];
     const index = from.row * 8 + from.col;
-    const boardSize = allboards[0][0].getClientRects()[0];
+    const boardSize = centerBoard.getClientRects()[0];
     // const fromBoard = allboards[from.sectorRow][from.sectorCol];
     // const toBoard = allboards[to.sectorRow][to.sectorCol];
     // const fromSquare = fromBoard.children[from.row * 8 + from.col];
     // const toSquare = toBoard.children[to.row * 8 + to.col];
-    const fromSquare = allboards[0][0].children[from.row * 8 + from.col];
-    const toSquare = allboards[0][0].children[to.row * 8 + to.col];
+    const fromSquare = centerBoard.children[from.row * 8 + from.col];
+    const toSquare = centerBoard.children[to.row * 8 + to.col];
     const fromRects = fromSquare.getClientRects()[0];
     const toRects = toSquare.getClientRects()[0];
-    const sectorDeltaX = (to.sectorCol - from.sectorCol) * boardSize.width;
-    const sectorDeltaY = (to.sectorRow - from.sectorRow) * boardSize.height;
+
+    let sectorDeltaX = (to.sectorCol - from.sectorCol) * boardSize.width;
+    let sectorDeltaY = (to.sectorRow - from.sectorRow) * boardSize.height;
+    
+    // Focus mode
+    if (focusModeEnabled) {
+        sectorDeltaX = 0;
+        sectorDeltaY = 0;
+    }
+
     const deltaX = (toRects.x - fromRects.x) + sectorDeltaX;
     const deltaY = (toRects.y - fromRects.y) + sectorDeltaY;
 

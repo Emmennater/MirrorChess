@@ -76,6 +76,13 @@
     position: absolute;
 }
 
+.chessboard.focus-mode {
+    position: absolute;
+    top: 0px;
+    --width: calc(100vh * var(--ratio_c));
+    --height: 100vh;
+}
+
 .piece-container {
     z-index: 2;
     position: relative;

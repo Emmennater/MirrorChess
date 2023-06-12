@@ -14,3 +14,7 @@ function print(...args) {
 function lerp(a, b, v) {
     return a * (1 - v) + b * v;
 }
+
+Array.prototype.back = function() {
+    return this[this.length - 1];
+}

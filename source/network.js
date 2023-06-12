@@ -47,11 +47,16 @@ class Sockets {
             if (json.type == "put") {
                 if (json.what == "joined") {
                     // A client joined the session
-                    print("player joined");
+                    // print("player joined");
+                    Notification.show("Player Joined");
                 }
 
                 if (json.what == "left") {
-                    print("player left");
+                    // print("player left");
+                    if (ChessNetwork.currentSession.isHost)
+                        Notification.show("Player Left");
+                    else
+                        Notification.show("Host Left");
                 }
             }
         });
