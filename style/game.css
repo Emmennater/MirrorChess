@@ -78,9 +78,15 @@
 
 .chessboard.focus-mode {
     position: absolute;
-    top: 0px;
-    --width: calc(100vh * var(--ratio_c));
-    --height: 100vh;
+
+    /* This was a pain to calculate (could probably be improved) */
+    --wsize1: calc(100vh * var(--ratio_c));
+    --wsize2: calc(100vw / var(--ratio_r));
+    --hsize1: calc(100vh * var(--ratio_r));
+    --hsize2: calc(100vw / var(--ratio_c));
+
+    --width: calc(min(var(--wsize1), var(--wsize2)));
+    --height: calc(min(var(--hsize1), var(--hsize2)));
 }
 
 .piece-container {
