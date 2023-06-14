@@ -213,6 +213,9 @@ class MenuEvents {
             buttonText.innerText = "Enabled";
             enableFocusMode();
         }
+
+        gameEvents.resetAllSelected();
+        resetHighlightedMoves();
     }
 }
 

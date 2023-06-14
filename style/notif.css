@@ -1,6 +1,7 @@
 .notification {
     --notification-duration: 5s;
     
+    z-index: 6;
     position: fixed;
     top: 40px;
     right: auto;

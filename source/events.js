@@ -153,7 +153,7 @@ ChessEvents.prototype.squareDown = function(row, col, sectorRow, sectorCol, elem
     if (this.waiting) return;
     
     // Un-highlight possible moves
-    resetHighlightedMoves(this.selected.row, this.selected.col, this.selected.sectorRow, this.selected.sectorCol);
+    resetHighlightedMoves();
 
     // Try to move selected (click move)
     const success = this.playMove(

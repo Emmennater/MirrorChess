@@ -265,7 +265,7 @@ function loop(timestamp) {
     // Menu Events
     MenuEvents.openMenu();
     MenuEvents.serverIsOffline();
-    MenuEvents.toggleFocusMode();
+    if (isMobileDevice()) MenuEvents.toggleFocusMode();
 
     // Connect to server
     Sockets.establishConnection();

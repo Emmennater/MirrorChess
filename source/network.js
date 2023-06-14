@@ -8,7 +8,10 @@ class Sockets {
         const isSecure = window.location.href.startsWith('https://');
         const isLocal = window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1";
         const protocol = isSecure ? "wss" : "ws";
-        const hostname = isLocal ? "localhost" : "131.93.29.118";
+        let hostname = window.location.hostname;
+        // let hostname = isLocal ? "localhost" : "131.93.29.118";
+        // if (isLocal) hostname = "localhost";
+        // if (window.location.hostname == "192.168.1.1") hostname = "192.168.1.1";
         const port = 8082;
         this.ws = new WebSocket(`${protocol}://${hostname}:${port}`);
 

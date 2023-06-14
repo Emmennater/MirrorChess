@@ -114,6 +114,7 @@
 }
 
 .toolbar {
+    pointer-events: none;
     position: absolute;
     width: 100%;
     height: var(--toolbar-height);
@@ -125,6 +126,7 @@
 }
 
 .button {
+    pointer-events: auto;
     margin: 4px 8px;
 
     font-size: 20px;

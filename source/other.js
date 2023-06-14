@@ -18,3 +18,9 @@ function lerp(a, b, v) {
 Array.prototype.back = function() {
     return this[this.length - 1];
 }
+
+function isMobileDevice() {
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    return mobileRegex.test(navigator.userAgent);
+}
+  
