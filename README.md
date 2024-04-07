@@ -8,4 +8,3 @@
     <li>Right Click + Drag to Pan</li>
     <li>Scroll Wheel to Zoom</li>
 </ul>
-![image](https://github.com/Emmennater/MirrorChess/assets/56277507/601fabd4-d1b7-4839-ae93-590b50fa80af)
