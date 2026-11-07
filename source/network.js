@@ -5,20 +5,25 @@ class Sockets {
     static outgoingRequests = new Map();
 
     static establishConnection() {
-        const isSecure = window.location.href.startsWith('https://');
-        const isLocal = window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1";
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const isSecure = true;
         const protocol = isSecure ? "wss" : "ws";
-        let hostname = window.location.hostname;
+        const hostname = urlParams.get('host') ?? "localhost";
+        const port = urlParams.get('port') ?? 8082;
+        // const isLocal = window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1";
+        // let hostname = window.location.hostname;
         // let hostname = isLocal ? "localhost" : "131.93.29.118";
         // if (isLocal) hostname = "localhost";
         // if (window.location.hostname == "192.168.1.1") hostname = "192.168.1.1";
-        const port = 8082;
-        this.ws = new WebSocket(`${protocol}://${hostname}:${port}`);
+        const address = `${protocol}://${hostname}`;
+        // console.log("connecting to", address);
+        this.ws = new WebSocket(address);
 
         this.ws.addEventListener("open", conn => {
             this.open = true;
             MenuEvents.serverIsOnline();
-            console.log("connected");
+            // console.log("connected");
             
             // Get hosts from server
             Sockets.request("hosts", (reply) => {

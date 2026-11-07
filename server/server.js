@@ -55,14 +55,18 @@ class Server {
         this.clients = new Map();
         this.databank = databank;
         this.databank.setServer(this);
+        this.port = 8082;
     }
 
     start() {
         console.log("starting server...");
         this.wss = new WebSocket.Server({
-            port: 8082,
+            port: this.port,
             hostname: '127.0.0.1'
         });
+        this.wss.on('listening', () => console.log(`server listening on port ${this.port}`));
+        this.wss.on('error', (error) => console.log(error));
+        this.wss.on('close', () => console.log("server closed"));
         this.wss.on('connection', (ws) => this.onConnection(ws));
     }
 
