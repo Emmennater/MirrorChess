@@ -99,11 +99,12 @@ class ChessSession {
             }
         });
 
-        // Set turn
-        gameEvents.waiting = !turn;
+        // Set turn (turn is whether this player is white, the FEN decides who moves first)
+        const myTurn = turn == !game.blacksTurn;
+        gameEvents.waiting = !myTurn;
 
         // If we are waiting for the other player, put in a request
-        if (!turn) {
+        if (!myTurn) {
             this.requestMove(data => {
                 // print("received move: ", data);
                 const movedata = data.data;

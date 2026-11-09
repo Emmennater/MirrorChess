@@ -123,6 +123,13 @@ class Move {
         // Update possible moves
         MoveGenerator.generateMoves(chessgame);
 
+        Move.showStatus();
+    }
+
+    /**
+     * Show check highlights and the check, checkmate or stalemate message for the current moves
+     */
+    static showStatus() {
         // Update highlighted checks
         unhighlightChecks();
         if (MoveGenerator.kingInCheck) highlightChecks(MoveGenerator.kingInCheck.row, MoveGenerator.kingInCheck.col);
