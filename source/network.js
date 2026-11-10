@@ -7,10 +7,10 @@ class Sockets {
     static establishConnection() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const isSecure = true;
-        const protocol = isSecure ? "wss" : "ws";
         const hostname = urlParams.get('host') ?? "localhost";
         const port = urlParams.get('port') ?? 8082;
+        const isSecure = !hostname.startsWith('localhost');
+        const protocol = isSecure ? "wss" : "ws";
         // const isLocal = window.location.hostname == "localhost" || window.location.hostname == "127.0.0.1";
         // let hostname = window.location.hostname;
         // let hostname = isLocal ? "localhost" : "131.93.29.118";

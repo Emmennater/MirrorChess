@@ -3,6 +3,8 @@ const https = require('https');
 const WebSocket = require('ws');
 const fs = require('fs');
 
+const HEARTBEAT_INTERVAL = 30000; // ms between pings, well under ngrok's idle timeout
+
 // Maybe add a ban list to users who try to "hack" the system
 // by sending bad data
 class Client {
@@ -10,7 +12,9 @@ class Client {
         this.server = server;
         this.ws = ws;
         this.id = id;
+        this.isAlive = true; // answered the last heartbeat ping
 
+        this.ws.on("pong", () => this.isAlive = true);
         this.ws.on("message", (message) => this.onMessage(message));
         this.ws.on("close", () => this.onClose());
     }
@@ -56,6 +60,7 @@ class Server {
         this.databank = databank;
         this.databank.setServer(this);
         this.port = 8082;
+        this.heartbeat = null;
     }
 
     start() {
@@ -66,8 +71,32 @@ class Server {
         });
         this.wss.on('listening', () => console.log(`server listening on port ${this.port}`));
         this.wss.on('error', (error) => console.log(error));
-        this.wss.on('close', () => console.log("server closed"));
+        this.wss.on('close', () => this.onClose());
         this.wss.on('connection', (ws) => this.onConnection(ws));
+        this.heartbeat = setInterval(() => this.pingClients(), HEARTBEAT_INTERVAL);
+    }
+
+    /**
+     * Ping every client so idle connections keep sending traffic through ngrok,
+     * and drop clients that did not answer the previous ping
+     */
+    pingClients() {
+        for (const client of this.clients.values()) {
+            // No pong since the last ping, so the connection is dead
+            if (!client.isAlive) {
+                console.log("Client timed out: ", client.id);
+                client.ws.terminate();
+                continue;
+            }
+
+            client.isAlive = false;
+            client.ws.ping();
+        }
+    }
+
+    onClose() {
+        clearInterval(this.heartbeat);
+        console.log("server closed");
     }
 
     onConnection(ws) {
